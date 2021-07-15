@@ -1,8 +1,9 @@
 <template>
   <div id="app">
-    <div class="search">
-      <input type="text" v-model="search">
-      <button @click="Search()">Search</button>
+    <div class="search" :class="first?'first':''">
+      <input v-on:keydown.enter="Search()" type="text" v-model="search">
+      <button 
+      :class="search.length>1?'active':''" @click="Search()">Search</button>
     </div>
     <div v-if="torrents.length>0" class="table">
       <div class="row header">
@@ -29,6 +30,12 @@
         </div>
       </div>
     </div>
+    <div v-if="notfound" class="notfound">NOT FOUND</div>
+    <div class="loading" v-if="loading">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
   </div>
 </template>
 
@@ -40,7 +47,10 @@ export default {
   name: 'torrent-finder',
   data() {
     return {
-      domain: "https://young-brushlands-59138.herokuapp.com/",
+      first: true,
+      notfound: false,
+      loading: false,
+      domain: process.env.NODE_ENV==='production'?"https://young-brushlands-59138.herokuapp.com/":"http://localhost:80/",
       search: "",
       torrents: []
     }
@@ -48,14 +58,27 @@ export default {
   methods:{
     Search(){
       if(this.search.length<1) return
-      axios.get(this.domain,{params:{name:this.search}}).then(res=>this.torrents=res.data)
+      this.first=false
+      this.notfound=false
+      this.loading=true
+      axios.get(this.domain,{params:{name:this.search}}).then(res=>{
+        this.torrents=res.data
+        this.notfound=this.torrents<1
+        this.loading=false
+      })
     },
     Magnet(href){
-      axios.get(this.domain+"magnet",{params:{href:href}}).then(res=>window.location=res.data)
+      this.loading=true
+      axios.get(this.domain+"magnet",{params:{href:href}}).then(res=>{
+        window.location=res.data
+        this.loading=false
+      })
     },
     Torrent(href, name){
+      this.loading=true
       axios.get(this.domain+"torrent",{responseType:'blob',params:{href:href}}).then(res=>{
         FileDownload(res.data, "[github.com/KeeVeeG] "+name+".torrent")
+        this.loading=false
       })
     }
   },
@@ -71,13 +94,17 @@ export default {
   font-family: 'Play', sans-serif;
   font-size: 16px;
 }
+$blue: #4dbac9;
 .search{
   display:flex;
   width:100%;
   height:80px;
   justify-content:center;
   align-items:center;
-  $blue: #4dbac9;
+  transition: height .7s ease;
+  &.first{
+    height:100vh;
+  }
   input{
     width: 300px;
     border: 3px solid $blue;
@@ -88,14 +115,17 @@ export default {
     color: #333836;
   }
   button{
-    height: 34px;
+    height: 35px;
     border: 1px solid $blue;
     background: $blue;
     text-align: center;
-    color: white;
+    color: #9bd5dd;
     border-radius: 0 5px 5px 0;
     cursor: pointer;
     padding: 5px;
+    &.active{
+      color: white
+    }
   }
 }
 .table{
@@ -137,6 +167,50 @@ export default {
         border: none;
       }
     }
+  }
+}
+.notfound{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  font-weight: 900;
+  color: $blue;
+  font-size: 5rem;
+  font-style: italic;
+}
+.loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  width: 150px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  div {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 3px solid white;
+    background: $blue;
+    &:nth-child(1){
+      animation: bouncing 0.4s alternate infinite cubic-bezier(0.6, 0.05, 0.15, 0.95);
+    }
+    &:nth-child(2){
+      animation: bouncing 0.4s 0.1s alternate infinite cubic-bezier(0.6, 0.05, 0.15, 0.95) backwards;
+    }
+    &:nth-child(3){
+      animation: bouncing 0.4s 0.2s alternate infinite cubic-bezier(0.6, 0.05, 0.15, 0.95) backwards;
+    }
+  }
+}
+@keyframes bouncing {
+  0% {
+    transform: translate3d(0, 10px, 0) scale(1.2, 0.85);
+  }
+  100% {
+    transform: translate3d(0, -20px, 0) scale(0.9, 1.1);
   }
 }
 </style>
