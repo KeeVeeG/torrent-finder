@@ -22,7 +22,7 @@
             <button @click="Magnet(item.hrefDownload)">
               <img  src="~@/assets/magnet.png">
             </button>
-            <button @click="Torrent(item.hrefDownload)">
+            <button @click="Torrent(item.hrefDownload, item.name)">
               <img  src="~@/assets/download.png">
             </button>
           </div>
@@ -34,6 +34,7 @@
 
 <script>
 import axios from 'axios'
+import FileDownload from 'js-file-download'
 
 export default {
   name: 'torrent-finder',
@@ -46,13 +47,16 @@ export default {
   },
   methods:{
     Search(){
+      if(this.search.length<1) return
       axios.get(this.domain,{params:{name:this.search}}).then(res=>this.torrents=res.data)
     },
     Magnet(href){
       axios.get(this.domain+"magnet",{params:{href:href}}).then(res=>window.location=res.data)
     },
-    Torrent(href){
-      axios.get(this.domain+"torrent",{params:{href:href}}).then(res=>window.location=res.data)
+    Torrent(href, name){
+      axios.get(this.domain+"torrent",{responseType:'blob',params:{href:href}}).then(res=>{
+        FileDownload(res.data, "[github.com/KeeVeeG] "+name+".torrent")
+      })
     }
   },
 }

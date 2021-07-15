@@ -1,6 +1,7 @@
 import express from "express"
 import axios from 'axios'
 import {JSDOM} from 'jsdom'
+import http from 'http'
 const app = express()
 const PORT = process.env.PORT || 80
 const ip = "http://5.45.86.39"
@@ -55,7 +56,11 @@ app.get('/torrent',(req, res) => {
         if(response.status!==200) return
         let data = response.data
         var doc = new JSDOM(data).window.document
-        res.send(ip+doc.querySelector("#download_page_buttons").querySelectorAll("a")[0].getAttribute("href"))
+        let url = ip+doc.querySelector("#download_page_buttons").querySelectorAll("a")[0].getAttribute("href")
+        http.get(url, (getRes)=>{
+          res.setHeader("content-type", getRes.headers['content-type']);
+          getRes.pipe(res);
+        });
     })
 })
 
