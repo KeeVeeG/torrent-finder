@@ -45,7 +45,7 @@ app.get('/magnet',(req, res) => {
     axios.get(encodeURI(ip+req.query.href)).then(response=>{
         if(response.status!==200) return
         let data = response.data
-        var doc = new JSDOM(data).window.document
+        let doc = new JSDOM(data).window.document
         res.send(doc.querySelector("#download_page_buttons").querySelectorAll("a")[1].getAttribute("href"))
     })
 })
@@ -55,13 +55,23 @@ app.get('/torrent',(req, res) => {
     axios.get(encodeURI(ip+req.query.href)).then(response=>{
         if(response.status!==200) return
         let data = response.data
-        var doc = new JSDOM(data).window.document
+        let doc = new JSDOM(data).window.document
         let url = ip+doc.querySelector("#download_page_buttons").querySelectorAll("a")[0].getAttribute("href")
         http.get(url, (getRes)=>{
           res.setHeader("content-type", getRes.headers['content-type']);
           getRes.pipe(res);
         });
     })
+})
+
+app.get('/description',(req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  axios.get(encodeURI(ip+req.query.href)).then(response=>{
+      if(response.status!==200) return
+      let data = response.data
+      let doc = new JSDOM(data).window.document
+      res.send(doc.querySelectorAll("#details>tbody>tr")[0].innerHTML.replace(/\<a href=".*?\">/g, ''))
+  })
 })
 
 app.listen(PORT,()=>{

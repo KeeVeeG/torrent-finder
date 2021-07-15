@@ -1,10 +1,12 @@
 <template>
   <div id="app">
+    
     <div class="search" :class="first?'first':''">
       <input v-on:keydown.enter="Search()" type="text" v-model="search">
       <button 
-      :class="search.length>1?'active':''" @click="Search()">Search</button>
+      :class="search.length>0?'active':''" @click="Search()">Search</button>
     </div>
+
     <div v-if="torrents.length>0" class="table">
       <div class="row header">
         <div class="cell date">Date</div>
@@ -13,74 +15,59 @@
         <div class="cell peers">Peers</div>
         <div class="cell download">Download</div>
       </div>
-      <div class="row" v-for="(item, index) in torrents" :key="index">
-        <div class="cell date">{{item.date}}</div>
-        <div class="cell name">{{item.name}}</div>
-        <div class="cell size">{{item.size}}</div>
-        <div class="cell peers">{{item.peers}}</div>
-        <div class="cell download">
-          <div>
-            <button @click="Magnet(item.hrefDownload)">
-              <img  src="~@/assets/magnet.png">
-            </button>
-            <button @click="Torrent(item.hrefDownload, item.name)">
-              <img  src="~@/assets/download.png">
-            </button>
-          </div>
-        </div>
-      </div>
+    <Torrent v-for="(item,index) in torrents"
+    :key="index+item.name" :torrent="item"/>
     </div>
-    <div v-if="notfound" class="notfound">NOT FOUND</div>
+
+    <div v-if="notFound" class="notfound">NOT FOUND</div>
     <div class="loading" v-if="loading">
-        <div></div>
-        <div></div>
-        <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
     </div>
+
   </div>
 </template>
 
 <script>
 import axios from 'axios'
-import FileDownload from 'js-file-download'
+import Torrent from '@/components/Torrent.vue'
 
 export default {
   name: 'torrent-finder',
+  components:{Torrent},
   data() {
     return {
       first: true,
-      notfound: false,
-      loading: false,
-      domain: process.env.NODE_ENV==='production'?"https://young-brushlands-59138.herokuapp.com/":"http://localhost:80/",
+      notFound: false,
       search: "",
       torrents: []
+    }
+  },
+  computed:{
+    loading(){  
+      return this.$store.state.loading
+    },
+    domain(){  
+      return this.$store.state.domain
     }
   },
   methods:{
     Search(){
       if(this.search.length<1) return
       this.first=false
-      this.notfound=false
-      this.loading=true
+      this.notFound=false
+      this.$store.commit('SetLoadingStatus',true)
       axios.get(this.domain,{params:{name:this.search}}).then(res=>{
-        this.torrents=res.data
-        this.notfound=this.torrents<1
-        this.loading=false
+        this.torrents=res.data.map(e=>{
+          e.open=false
+          e.description=""
+          return e
+        })
+        this.notFound=this.torrents<1
+        this.$store.commit('SetLoadingStatus',false)
       })
     },
-    Magnet(href){
-      this.loading=true
-      axios.get(this.domain+"magnet",{params:{href:href}}).then(res=>{
-        window.location=res.data
-        this.loading=false
-      })
-    },
-    Torrent(href, name){
-      this.loading=true
-      axios.get(this.domain+"torrent",{responseType:'blob',params:{href:href}}).then(res=>{
-        FileDownload(res.data, "[github.com/KeeVeeG] "+name+".torrent")
-        this.loading=false
-      })
-    }
   },
 }
 </script>
@@ -106,6 +93,8 @@ $blue: #4dbac9;
     height:100vh;
   }
   input{
+    box-sizing:border-box;
+    height: 35px;
     width: 300px;
     border: 3px solid $blue;
     border-right: none;
@@ -143,29 +132,29 @@ $blue: #4dbac9;
       display: table-cell;
       vertical-align:middle;
       $border: 1px solid #c2d5da;
-      &.date, &.name, &.size, &.peers{
+      &.date, &.name, &.size, &.peers, &.download{
         border-right: $border;
       }
       &.name{
         padding-left: 15px;
+      }
+      button{
+        cursor: pointer;
+        background: transparent;
+        border: none;
       }
     }
     &.header>.cell{
       font-weight: 600;
     }
   }
-  .date, .size, .peers, .download{
+  .date, .size, .peers, .download, .description{
     text-align: center;
   }
   .download{
     div{
       display: flex;
       justify-content: space-around;
-      button{
-        cursor: pointer;
-        background: transparent;
-        border: none;
-      }
     }
   }
 }
@@ -180,7 +169,7 @@ $blue: #4dbac9;
   font-style: italic;
 }
 .loading {
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
   transform: translateX(-50%) translateY(-50%);
@@ -212,5 +201,24 @@ $blue: #4dbac9;
   100% {
     transform: translate3d(0, -20px, 0) scale(0.9, 1.1);
   }
+}
+@media (max-width:700px) {
+  *{
+    font-size: 12px;
+  }
+}
+@media (max-width:415px){
+  .date{
+    display: none!important;
+  }
+  .name{
+    padding-left:5px!important;
+  }
+}
+.hidewrap{
+  display: none;
+}
+br{
+  font-size: .5rem;
 }
 </style>
