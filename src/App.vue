@@ -2,7 +2,7 @@
   <div id="app">
     
     <div class="search" :class="first?'first':''">
-      <input v-on:keydown.enter="Search()" type="text" v-model="search">
+      <input :placeholder="placeholder" v-on:keydown.enter="Search()" type="text" v-model="search">
       <button 
       :class="search.length>0?'active':''" @click="Search()">Search</button>
     </div>
@@ -41,7 +41,8 @@ export default {
       first: true,
       notFound: false,
       search: "",
-      torrents: []
+      torrents: [],
+      placeholder: ""
     }
   },
   computed:{
@@ -69,6 +70,20 @@ export default {
       })
     },
   },
+  mounted(){
+    let dict = ["Photoshop", "Resident Evil", "Sony Vegas", "Shrek", "Dishonored", "Loki", "Witcher", "Crash Bandicoot"]
+    let word = dict[Math.floor(Math.random()*dict.length)]
+    setTimeout(() => {
+      Typping()
+    }, 2000);
+    const Typping = () =>{
+      if(this.placeholder==word) return
+      this.placeholder+=word[this.placeholder.length]
+      setTimeout(()=>{
+        Typping()
+      },100)
+    }
+  }
 }
 </script>
 
