@@ -69,11 +69,12 @@ app.get('/description',(req, res) => {
   axios.get(encodeURI(ip+req.query.href)).then(response=>{
       if(response.status!==200) return
       let data = response.data
-      let doc = new JSDOM(data).window.document
+      let doc = new JSDOM(data).window.document;
+      [].forEach.call(doc.querySelectorAll("img"),e=>e.setAttribute("onError","this.style.display='none'"))
       res.send(doc.querySelectorAll("#details>tbody>tr")[0].innerHTML.replace(/\<a href=".*?\">/g, ''))
   })
 })
 
 app.listen(PORT,()=>{
-  console.log("Started")
+  console.log("Started. Port: "+PORT)
 })

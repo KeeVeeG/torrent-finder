@@ -218,7 +218,4 @@ $blue: #4dbac9;
 .hidewrap{
   display: none;
 }
-br{
-  font-size: .5rem;
-}
 </style>
