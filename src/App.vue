@@ -19,8 +19,8 @@
     :key="index+item.name" :torrent="item"/>
     </div>
 
-    <div v-if="notFound" class="notfound">{{'Not Found'|localize}}</div>
-    <div class="loading" v-if="loading">
+    <div v-center v-if="notFound" class="notfound">{{'Not Found'|localize}}</div>
+    <div v-center class="loading" v-if="loading">
       <div></div>
       <div></div>
       <div></div>
@@ -180,10 +180,6 @@ $blue: #4dbac9;
   }
 }
 .notfound{
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translateX(-50%) translateY(-50%);
   font-weight: 900;
   color: $blue;
   font-size: 5rem;
@@ -191,10 +187,6 @@ $blue: #4dbac9;
   text-transform: uppercase;
 }
 .loading {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translateX(-50%) translateY(-50%);
   width: 150px;
   display: flex;
   justify-content: space-between;
