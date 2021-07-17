@@ -4,22 +4,22 @@
     <div class="search" :class="first?'first':''">
       <input :placeholder="placeholder" v-on:keydown.enter="Search()" type="text" v-model="search">
       <button 
-      :class="search.length>0?'active':''" @click="Search()">Search</button>
+      :class="search.length>0?'active':''" @click="Search()">{{'Search'|localize}}</button>
     </div>
 
     <div v-if="torrents.length>0" class="table">
       <div class="row header">
-        <div class="cell date">Date</div>
-        <div class="cell name">Name</div>
-        <div class="cell size">Size</div>
-        <div class="cell peers">Peers</div>
-        <div class="cell download">Download</div>
+        <div class="cell date">{{'Date'|localize}}</div>
+        <div class="cell name">{{'Name'|localize}}</div>
+        <div class="cell size">{{'Size'|localize}}</div>
+        <div class="cell peers">{{'Seeds'|localize}}</div>
+        <div class="cell download">{{'Download'|localize}}</div>
       </div>
     <Torrent v-for="(item,index) in torrents"
     :key="index+item.name" :torrent="item"/>
     </div>
 
-    <div v-if="notFound" class="notfound">NOT FOUND</div>
+    <div v-if="notFound" class="notfound">{{'Not Found'|localize}}</div>
     <div class="loading" v-if="loading">
       <div></div>
       <div></div>
@@ -188,6 +188,7 @@ $blue: #4dbac9;
   color: $blue;
   font-size: 5rem;
   font-style: italic;
+  text-transform: uppercase;
 }
 .loading {
   position: fixed;
