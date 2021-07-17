@@ -2,7 +2,7 @@
   <div id="app">
     
     <div class="search" :class="first?'first':''">
-      <input :placeholder="placeholder" v-on:keydown.enter="Search()" type="text" v-model="search">
+      <input v-autofocus :placeholder="placeholder" v-on:keydown.enter="Search()" type="text" v-model="search">
       <button 
       :class="search.length>0?'active':''" @click="Search()">{{'Search'|localize}}</button>
     </div>
@@ -77,7 +77,7 @@ export default {
   },
 
   mounted(){
-    let dict = ["Photoshop", "Resident Evil", "Sony Vegas", "Shrek", "Dishonored", "Loki", "Witcher", "Crash Bandicoot"]
+    let dict = ["Photoshop", "Resident Evil", "Sony Vegas", "Shrek", "Dishonored", "Loki", "Witcher", "Crash Bandicoot", "Harry Potter", "Marvel", "Forza Horizon", "Mafia"]
     let word = dict[Math.floor(Math.random()*dict.length)]
     setTimeout(() => {
       Typping()
@@ -87,7 +87,7 @@ export default {
       this.placeholder+=word[this.placeholder.length]
       setTimeout(()=>{
         Typping()
-      },100)
+      },150)
     }
   }
 }
