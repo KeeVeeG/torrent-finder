@@ -70,6 +70,12 @@ export default {
       })
     },
   },
+
+  /* Wake the fuck up, Heroku! */
+  created(){
+    axios.post(this.domain)
+  },
+
   mounted(){
     let dict = ["Photoshop", "Resident Evil", "Sony Vegas", "Shrek", "Dishonored", "Loki", "Witcher", "Crash Bandicoot"]
     let word = dict[Math.floor(Math.random()*dict.length)]
