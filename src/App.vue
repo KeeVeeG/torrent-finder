@@ -19,8 +19,8 @@
     :key="index+item.name" :torrent="item"/>
     </div>
 
-    <div v-center v-if="notFound" class="notfound">{{'Not Found'|localize}}</div>
-    <div v-center class="loading" v-if="loading">
+    <div v-center v-show="notFound" class="notfound">{{'Not Found'|localize}}</div>
+    <div v-center class="loading" v-show="loading">
       <div></div>
       <div></div>
       <div></div>
