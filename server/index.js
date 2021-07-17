@@ -76,7 +76,10 @@ app.get('/description',(req, res) => {
 })
 
 /* Wake the fuck up, Heroku! */
-app.post("/",(req, res)=>res.setHeader('Access-Control-Allow-Origin', '*'))
+app.post("/",(req, res)=>{
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.send()
+})
 
 app.listen(PORT,()=>{
   console.log("Started. Port: "+PORT)
