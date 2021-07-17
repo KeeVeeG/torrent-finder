@@ -5,5 +5,5 @@ const locales = {
 }
 export default function localize(word){
   const locale = navigator.languages[0].split("-")[0]
-  return locales[locale][word] || word
+  return locales[locale]?.[word] || word
 }
