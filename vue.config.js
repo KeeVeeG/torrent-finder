@@ -1,3 +1,3 @@
 module.exports = {
-    publicPath: '/torrent-finder/'
+  publicPath: '/torrent-finder/',
 }

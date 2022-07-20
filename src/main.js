@@ -7,9 +7,9 @@ import center from '@/directives/center'
 
 Vue.config.productionTip = false
 
-Vue.filter('localize',localize)
-Vue.directive('autofocus',autofocus)
-Vue.directive('center',center)
+Vue.filter('localize', localize)
+Vue.directive('autofocus', autofocus)
+Vue.directive('center', center)
 
 new Vue({
   store,
